@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+	"go-do/services"
 	"go-do/system"
 	"log"
 	"os"
@@ -11,6 +12,9 @@ import (
 
 func main() {
 	environment := initEnvironment()
+
+	db := system.Database()
+	services.InitServices(db)
 
 	if environment == "production" {
 		gin.SetMode(gin.ReleaseMode)
