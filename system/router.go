@@ -13,9 +13,15 @@ import (
 
 var routes = []route{
 	{
+		method:      http.MethodPost,
+		path:        "/users/login",
+		middlewares: nil,
+		handler:     controllers.Login,
+	},
+	{
 		method:      http.MethodGet,
 		path:        "/users/:id",
-		middlewares: []gin.HandlerFunc{middlewares.AuthMiddleware()},
+		middlewares: []gin.HandlerFunc{middlewares.AuthMiddleware(), middlewares.AdminMiddleware()},
 		handler:     controllers.GetUser,
 	},
 	//{

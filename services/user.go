@@ -27,6 +27,17 @@ func (r *UserService) GetByID(id int) (*models.User, error) {
 	return nil, errors.New("user not found")
 }
 
+func (r *UserService) GetByEmail(email string) (*models.User, error) {
+	// row := r.DB.QueryRow("SELECT id, full_name, email, password, is_admin, created_at, updated_at FROM users WHERE id = ?", id)
+
+	for _, user := range memUser {
+		if user.Email == email {
+			return &user, nil
+		}
+	}
+	return nil, errors.New("user not found")
+}
+
 // ============== MOCKING ==============
 
 var memUser []models.User
