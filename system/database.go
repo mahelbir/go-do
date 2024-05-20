@@ -9,7 +9,7 @@ import (
 func Database() *sql.DB {
 	db, _, err := sqlmock.New()
 	if err != nil {
-		log.Fatalf("failed to create sqlmock: %s", err)
+		log.Fatalf("failed to connect database: %s", err)
 	}
 	return db
 }

@@ -15,6 +15,65 @@ func NewTodoListService(db *sql.DB) *TodoListService {
 	return &TodoListService{DB: db}
 }
 
+func (s *TodoListService) Create(todoList models.TodoList) (models.TodoList, error) {
+	// _, err := s.DB.Exec("INSERT INTO todo_list (user_id, title) VALUES (?, ?)", todoList.UserID, todoList.Title)
+
+	todoList.ID = memTodoList[len(memTodoList)-1].ID + 1
+	todoList.CreatedAt = time.Now()
+	todoList.UpdatedAt = time.Now()
+
+	memTodoList = append(memTodoList, todoList)
+	return todoList, nil
+}
+
+func (s *TodoListService) Update(todoList models.TodoList) (models.TodoList, error) {
+	// _, err := s.DB.Exec("UPDATE todo_list SET title = ? WHERE id = ?", todoList.Title, todoList.ID)
+
+	for i, t := range memTodoList {
+		if t.ID == todoList.ID {
+			todoList.UpdatedAt = time.Now()
+			memTodoList[i] = todoList
+			return todoList, nil
+		}
+	}
+	return models.TodoList{}, nil
+}
+
+func (s *TodoListService) Delete(id int) error {
+	// _, err := s.DB.Exec("DELETE FROM todo_list WHERE id = ?", id)
+
+	for i, t := range memTodoList {
+		if t.ID == id {
+			memTodoList = append(memTodoList[:i], memTodoList[i+1:]...)
+			return nil
+		}
+	}
+	return nil
+}
+
+func (s *TodoListService) GetByID(id int) (models.TodoList, error) {
+	// row := s.DB.QueryRow("SELECT * FROM todo_list WHERE id = ?", id)
+
+	for _, todoList := range memTodoList {
+		if todoList.ID == id {
+			return todoList, nil
+		}
+	}
+	return models.TodoList{}, nil
+}
+
+func (s *TodoListService) ListByUserID(userID int) ([]models.TodoList, error) {
+	// rows, err := s.DB.Query("SELECT * FROM todo_list WHERE user_id = ?", userID)
+
+	todoLists := make([]models.TodoList, 0)
+	for _, todoList := range memTodoList {
+		if todoList.UserID == userID {
+			todoLists = append(todoLists, todoList)
+		}
+	}
+	return todoLists, nil
+}
+
 // ============== MOCKING ==============
 
 var memTodoList []models.TodoList

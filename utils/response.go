@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func NewResponse(status bool, message string, data any) gin.H {
+func NewResponse(status bool, message string, data interface{}) gin.H {
 	return gin.H{
 		"status":  status,
 		"message": message,

@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-func AdminMiddleware() gin.HandlerFunc {
+func Admin() gin.HandlerFunc {
 	return func(c *gin.Context) {
 
 		isAdmin := c.GetBool("isAdmin")
@@ -17,6 +17,5 @@ func AdminMiddleware() gin.HandlerFunc {
 		}
 
 		c.Next()
-
 	}
 }

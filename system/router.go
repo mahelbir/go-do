@@ -1,50 +1,17 @@
 package system
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
-	"go-do/controllers"
-	"go-do/middlewares"
 	"go-do/utils"
+	"net/http"
 )
 
-// ================ ROUTES ===============
-
-var routes = []route{
-	{
-		method:      http.MethodPost,
-		path:        "/users/login",
-		middlewares: nil,
-		handler:     controllers.Login,
-	},
-	{
-		method:      http.MethodGet,
-		path:        "/users/:id",
-		middlewares: []gin.HandlerFunc{middlewares.AuthMiddleware(), middlewares.AdminMiddleware()},
-		handler:     controllers.GetUser,
-	},
-	//{
-	//	path:        "/sub",
-	//	middlewares: []gin.HandlerFunc{middlewares.AuthMiddleware()},
-	//	routes: []route{
-	//		{
-	//			method:  http.MethodGet,
-	//			path:    "/1",
-	//			handler: controllers.TestController,
-	//		},
-	//	},
-	//},
-}
-
-// ================ /ROUTES ===============
-
-type route struct {
+type Route struct {
 	method      string
 	path        string
 	middlewares []gin.HandlerFunc
 	handler     gin.HandlerFunc
-	routes      []route
+	routes      []Route
 }
 
 func Router(router *gin.Engine) {
@@ -69,7 +36,7 @@ func joinPaths(paths ...string) string {
 	return fullPath
 }
 
-func setupRoutes(router *gin.Engine, routes []route, parentPath string, parentMiddlewares []gin.HandlerFunc) {
+func setupRoutes(router *gin.Engine, routes []Route, parentPath string, parentMiddlewares []gin.HandlerFunc) {
 	for _, r := range routes {
 		fullPath := joinPaths(parentPath, r.path)
 		routeGroup := router.Group(fullPath)

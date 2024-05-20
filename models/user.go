@@ -21,8 +21,8 @@ type PublicUser struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
-func ToPublicUser(user User) PublicUser {
-	return PublicUser{
+func ToPublicUser(user *User) *PublicUser {
+	return &PublicUser{
 		ID:        user.ID,
 		FullName:  user.FullName,
 		Email:     user.Email,

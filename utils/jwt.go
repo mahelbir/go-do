@@ -3,6 +3,7 @@ package utils
 import (
 	"errors"
 	"github.com/golang-jwt/jwt/v4"
+	"go-do/models"
 	"os"
 	"time"
 )
@@ -17,13 +18,13 @@ type Claims struct {
 
 var jwtKey = []byte(os.Getenv("SECRET_KEY"))
 
-func GenerateJWT(id int, isAdmin bool, fullName, email string) (string, error) {
+func GenerateJWT(user *models.User) (string, error) {
 	expirationTime := time.Now().Add(time.Hour * 24)
 	claims := &Claims{
-		ID:       id,
-		IsAdmin:  isAdmin,
-		FullName: fullName,
-		Email:    email,
+		ID:       user.ID,
+		IsAdmin:  user.IsAdmin,
+		FullName: user.FullName,
+		Email:    user.Email,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expirationTime),
 		},
