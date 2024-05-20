@@ -21,6 +21,7 @@ func (s *TodoListService) Create(todoList models.TodoList) (models.TodoList, err
 	todoList.ID = memTodoList[len(memTodoList)-1].ID + 1
 	todoList.CreatedAt = time.Now()
 	todoList.UpdatedAt = time.Now()
+	todoList.DeletedAt = nil
 
 	memTodoList = append(memTodoList, todoList)
 	return todoList, nil
@@ -31,7 +32,10 @@ func (s *TodoListService) Update(todoList models.TodoList) (models.TodoList, err
 
 	for i, t := range memTodoList {
 		if t.ID == todoList.ID {
+			todoList.UserID = t.UserID
+			todoList.CreatedAt = t.CreatedAt
 			todoList.UpdatedAt = time.Now()
+			todoList.DeletedAt = t.DeletedAt
 			memTodoList[i] = todoList
 			return todoList, nil
 		}
@@ -40,7 +44,7 @@ func (s *TodoListService) Update(todoList models.TodoList) (models.TodoList, err
 }
 
 func (s *TodoListService) Delete(id int) error {
-	// _, err := s.DB.Exec("DELETE FROM todo_list WHERE id = ?", id)
+	// _, err := s.DB.Exec("UPDATE todo_list SET deleted_at = ? WHERE id = ?", time.Now(), id)
 
 	for i, t := range memTodoList {
 		if t.ID == id {

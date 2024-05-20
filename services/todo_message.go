@@ -15,27 +15,83 @@ func NewTodoMessageService(db *sql.DB) *TodoMessageService {
 	return &TodoMessageService{DB: db}
 }
 
-func (r *TodoMessageService) GetById(id int) (*models.TodoMessage, error) {
-	// row := r.DB.QueryRow("SELECT id, todo_list_id, created_at, updated_at, deleted_at, content, is_completed FROM todo_messages WHERE id = ?", id)
+func (s *TodoMessageService) Create(todoMessage models.TodoMessage) (models.TodoMessage, error) {
+	// _, err := s.DB.Exec("INSERT INTO todo_message (todo_list_id, content, is_completed) VALUES (?, ?, ?)", todoMessage.TodoListID, todoMessage.Content, todoMessage.IsCompleted)
 
-	todoMessage := &models.TodoMessage{}
+	todoMessage.ID = memTodoMessage[len(memTodoMessage)-1].ID + 1
+	todoMessage.CreatedAt = time.Now()
+	todoMessage.UpdatedAt = time.Now()
+	todoMessage.DeletedAt = nil
+	todoMessage.IsCompleted = false
+
+	memTodoMessage = append(memTodoMessage, todoMessage)
 	return todoMessage, nil
 }
 
-func (r *TodoMessageService) Create(todoMessage *models.TodoMessage) error {
-	// _, err := r.DB.Exec("INSERT INTO todo_messages (todo_list_id, created_at, updated_at, content, is_completed) VALUES (?, ?, ?, ?, ?)", todoMessage.TodoListID, todoMessage.CreatedAt, todoMessage.UpdatedAt, todoMessage.Content, todoMessage.IsCompleted)
+func (s *TodoMessageService) Update(todoMessage models.TodoMessage) (models.TodoMessage, error) {
+	// _, err := s.DB.Exec("UPDATE todo_message SET content = ?, is_completed = ? WHERE id = ?", todoMessage.Content, todoMessage.IsCompleted, todoMessage.ID)
 
+	for i, t := range memTodoMessage {
+		if t.ID == todoMessage.ID {
+			todoMessage.TodoListID = t.TodoListID
+			todoMessage.CreatedAt = t.CreatedAt
+			todoMessage.UpdatedAt = time.Now()
+			todoMessage.DeletedAt = t.DeletedAt
+			memTodoMessage[i] = todoMessage
+			return todoMessage, nil
+		}
+	}
+	return models.TodoMessage{}, nil
+}
+
+func (s *TodoMessageService) Delete(id int) error {
+	// _, err := s.DB.Exec("UPDATE todo_message SET deleted_at = ? WHERE id = ?", time.Now(), id)
+
+	for i, t := range memTodoMessage {
+		if t.ID == id {
+			now := time.Now()
+			t.DeletedAt = &now
+			memTodoMessage[i] = t
+			return nil
+		}
+	}
 	return nil
 }
 
-func (r *TodoMessageService) Update(todoMessage *models.TodoMessage) error {
-	// _, err := r.DB.Exec("UPDATE todo_messages SET updated_at = ?, deleted_at = ?, content = ?, is_completed = ? WHERE id = ?", todoMessage.UpdatedAt, todoMessage.DeletedAt, todoMessage.Content, todoMessage.IsCompleted, todoMessage.ID)
+func (s *TodoMessageService) ListByTodoListID(todoListID int) ([]models.TodoMessage, error) {
+	// rows, err := s.DB.Query("SELECT id, todo_list_id, created_at, updated_at, deleted_at, content, is_completed FROM todo_message WHERE todo_list_id = ? AND deleted_at IS NULL", todoListID)
 
-	return nil
+	var todoMessages []models.TodoMessage
+	for _, t := range memTodoMessage {
+		if t.TodoListID == todoListID && t.DeletedAt == nil {
+			todoMessages = append(todoMessages, t)
+		}
+	}
+	return todoMessages, nil
 }
 
-func (r *TodoMessageService) Delete(id int) error {
-	// _, err := r.DB.Exec("DELETE FROM todo_messages WHERE id = ?", id)
+func (s *TodoMessageService) GetByID(id int) (models.TodoMessage, error) {
+	// row := s.DB.QueryRow("SELECT id, todo_list_id, created_at, updated_at, deleted_at, content, is_completed FROM todo_message WHERE id = ? AND deleted_at IS NULL", id)
+
+	for _, t := range memTodoMessage {
+		if t.ID == id && t.DeletedAt == nil {
+			return t, nil
+		}
+	}
+	return models.TodoMessage{}, nil
+}
+
+func (s *TodoMessageService) SetCompleted(id int, isCompleted bool) error {
+	// _, err := s.DB.Exec("UPDATE todo_message SET is_completed = ? WHERE id = ?", isCompleted, id)
+
+	for i, t := range memTodoMessage {
+		if t.ID == id {
+			t.IsCompleted = isCompleted
+			memTodoMessage[i] = t
+			return nil
+		}
+
+	}
 
 	return nil
 }

@@ -23,7 +23,7 @@ func TodoListAccess() gin.HandlerFunc {
 			return
 		}
 
-		if todoList.ID == 0 {
+		if todoList.ID <= 0 {
 			c.JSON(http.StatusNotFound, utils.NotFoundResponse())
 			c.Abort()
 			return

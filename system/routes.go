@@ -55,4 +55,44 @@ var routes = []Route{
 			},
 		},
 	},
+	{
+		path:        "/todo_message",
+		middlewares: []gin.HandlerFunc{middlewares.Auth()},
+		routes: []Route{
+			{
+				path:        "/list/:id",
+				method:      http.MethodGet,
+				middlewares: []gin.HandlerFunc{middlewares.ParamID(), middlewares.TodoListAccess()},
+				handler:     controllers.ListTodoMessageByTodoListID,
+			},
+			{
+				path:        "/:id",
+				middlewares: []gin.HandlerFunc{middlewares.ParamID()},
+				routes: []Route{
+					{
+						method:      http.MethodPost,
+						middlewares: []gin.HandlerFunc{middlewares.TodoListAccess()},
+						handler:     controllers.CreateTodoMessage,
+					},
+					{
+						middlewares: []gin.HandlerFunc{middlewares.TodoMessageAccess()},
+						routes: []Route{
+							{
+								method:  http.MethodGet,
+								handler: controllers.GetTodoMessage,
+							},
+							{
+								method:  http.MethodPatch,
+								handler: controllers.UpdateTodoMessage,
+							},
+							{
+								method:  http.MethodDelete,
+								handler: controllers.DeleteTodoMessage,
+							},
+						},
+					},
+				},
+			},
+		},
+	},
 }
