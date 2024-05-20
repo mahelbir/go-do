@@ -51,15 +51,10 @@ func (s *TodoListService) Delete(id int) error {
 	return nil
 }
 
-func (s *TodoListService) GetByID(id int) (models.TodoList, error) {
-	// row := s.DB.QueryRow("SELECT * FROM todo_list WHERE id = ?", id)
+func (s *TodoListService) List() ([]models.TodoList, error) {
+	// rows, err := s.DB.Query("SELECT * FROM todo_list")
 
-	for _, todoList := range memTodoList {
-		if todoList.ID == id {
-			return todoList, nil
-		}
-	}
-	return models.TodoList{}, nil
+	return memTodoList, nil
 }
 
 func (s *TodoListService) ListByUserID(userID int) ([]models.TodoList, error) {
@@ -72,6 +67,17 @@ func (s *TodoListService) ListByUserID(userID int) ([]models.TodoList, error) {
 		}
 	}
 	return todoLists, nil
+}
+
+func (s *TodoListService) GetByID(id int) (models.TodoList, error) {
+	// row := s.DB.QueryRow("SELECT * FROM todo_list WHERE id = ?", id)
+
+	for _, todoList := range memTodoList {
+		if todoList.ID == id {
+			return todoList, nil
+		}
+	}
+	return models.TodoList{}, nil
 }
 
 // ============== MOCKING ==============

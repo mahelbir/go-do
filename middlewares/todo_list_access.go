@@ -17,14 +17,14 @@ func TodoListAccess() gin.HandlerFunc {
 			return
 		}
 
-		if todoList.ID == 0 {
-			c.JSON(http.StatusNotFound, utils.NotFoundResponse())
+		if todoList.UserID != c.GetInt("userID") && !c.GetBool("isAdmin") {
+			c.JSON(http.StatusForbidden, utils.ForbiddenResponse())
 			c.Abort()
 			return
 		}
 
-		if todoList.UserID != c.GetInt("userID") && !c.GetBool("isAdmin") {
-			c.JSON(http.StatusForbidden, utils.ForbiddenResponse())
+		if todoList.ID == 0 {
+			c.JSON(http.StatusNotFound, utils.NotFoundResponse())
 			c.Abort()
 			return
 		}

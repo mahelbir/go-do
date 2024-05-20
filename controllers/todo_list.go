@@ -59,7 +59,22 @@ func DeleteTodoList(c *gin.Context) {
 }
 
 func ListTodoList(c *gin.Context) {
-	todoLists, err := services.TodoListSvc.ListByUserID(c.GetInt("userID"))
+	showAll := c.Query("all")
+	userID := c.GetInt("userID")
+	isAdmin := c.GetBool("isAdmin")
+
+	var todoLists []models.TodoList
+	var err error
+
+	if showAll != "" {
+		if !isAdmin {
+			c.JSON(http.StatusForbidden, utils.ForbiddenResponse())
+			return
+		}
+		todoLists, err = services.TodoListSvc.List()
+	} else {
+		todoLists, err = services.TodoListSvc.ListByUserID(userID)
+	}
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, utils.ErrorResponse())
 		return

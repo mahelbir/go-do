@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"go-do/utils"
 	"net/http"
+	"strings"
 )
 
 type Route struct {
@@ -33,7 +34,7 @@ func joinPaths(paths ...string) string {
 			fullPath += "/" + path
 		}
 	}
-	return fullPath
+	return strings.TrimRight(fullPath, "/")
 }
 
 func setupRoutes(router *gin.Engine, routes []Route, parentPath string, parentMiddlewares []gin.HandlerFunc) {
