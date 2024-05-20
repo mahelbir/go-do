@@ -44,7 +44,9 @@ func (s *TodoListService) Delete(id int) error {
 
 	for i, t := range memTodoList {
 		if t.ID == id {
-			memTodoList = append(memTodoList[:i], memTodoList[i+1:]...)
+			now := time.Now()
+			t.DeletedAt = &now
+			memTodoList[i] = t
 			return nil
 		}
 	}
@@ -52,31 +54,40 @@ func (s *TodoListService) Delete(id int) error {
 }
 
 func (s *TodoListService) List() ([]models.TodoList, error) {
-	// rows, err := s.DB.Query("SELECT * FROM todo_list")
-
-	return memTodoList, nil
-}
-
-func (s *TodoListService) ListByUserID(userID int) ([]models.TodoList, error) {
-	// rows, err := s.DB.Query("SELECT * FROM todo_list WHERE user_id = ?", userID)
+	// rows, err := s.DB.Query("SELECT * FROM todo_list WHERE deleted_at IS NULL")
 
 	todoLists := make([]models.TodoList, 0)
 	for _, todoList := range memTodoList {
-		if todoList.UserID == userID {
+		if todoList.DeletedAt == nil {
 			todoLists = append(todoLists, todoList)
 		}
 	}
+
+	return todoLists, nil
+}
+
+func (s *TodoListService) ListByUserID(userID int) ([]models.TodoList, error) {
+	// rows, err := s.DB.Query("SELECT * FROM todo_list WHERE deleted_at IS NULL AND user_id = ?", userID)
+
+	todoLists := make([]models.TodoList, 0)
+	for _, todoList := range memTodoList {
+		if todoList.UserID == userID && todoList.DeletedAt == nil {
+			todoLists = append(todoLists, todoList)
+		}
+	}
+
 	return todoLists, nil
 }
 
 func (s *TodoListService) GetByID(id int) (models.TodoList, error) {
-	// row := s.DB.QueryRow("SELECT * FROM todo_list WHERE id = ?", id)
+	// row := s.DB.QueryRow("SELECT * FROM todo_list WHERE deleted_at IS NULL AND id = ?", id)
 
 	for _, todoList := range memTodoList {
-		if todoList.ID == id {
+		if todoList.ID == id && todoList.DeletedAt == nil {
 			return todoList, nil
 		}
 	}
+
 	return models.TodoList{}, nil
 }
 
