@@ -27,6 +27,8 @@ func CreateTodoMessage(c *gin.Context) {
 		return
 	}
 
+	updateCompletionRate(todoList.ID)
+
 	c.JSON(http.StatusCreated, utils.NewResponse(true, "Todo message created", todoMessage))
 }
 
@@ -37,7 +39,7 @@ func UpdateTodoMessage(c *gin.Context) {
 	}
 
 	todoMessage := c.MustGet("todoMessage").(models.TodoMessage)
-	details.IsCompleted = todoMessage.IsCompleted
+	todoMessage.IsCompleted = details.IsCompleted
 	if details.Content != "" {
 		todoMessage.Content = details.Content
 	}
@@ -46,6 +48,8 @@ func UpdateTodoMessage(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, utils.ErrorResponse())
 		return
 	}
+
+	updateCompletionRate(todoMessage.TodoListID)
 
 	c.JSON(http.StatusOK, utils.NewResponse(true, "Todo message updated", todoMessage))
 }
@@ -56,6 +60,8 @@ func DeleteTodoMessage(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, utils.ErrorResponse())
 		return
 	}
+
+	updateCompletionRate(todoMessage.TodoListID)
 
 	c.JSON(http.StatusOK, utils.NewResponse(true, "Todo message deleted", nil))
 }
@@ -83,4 +89,22 @@ func todoMessageDetails(c *gin.Context) *models.TodoMessage {
 		return nil
 	}
 	return &details
+}
+
+func calculateCompletionRate(todoListID int) int {
+	todoMessages, err := services.TodoMessageSvc.ListByTodoListID(todoListID)
+	if err != nil {
+		return 0
+	}
+	completedTodoMessages := 0
+	for _, t := range todoMessages {
+		if t.IsCompleted {
+			completedTodoMessages++
+		}
+	}
+	return int(float64(completedTodoMessages) / float64(len(todoMessages)) * 100)
+}
+
+func updateCompletionRate(todoListID int) {
+	_ = services.TodoListSvc.SetCompletionRate(todoListID, calculateCompletionRate(todoListID))
 }

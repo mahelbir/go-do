@@ -95,33 +95,50 @@ func (s *TodoListService) GetByID(id int) (models.TodoList, error) {
 	return models.TodoList{}, nil
 }
 
+func (s *TodoListService) SetCompletionRate(todoListID int, completionRate int) error {
+	// _, err := s.DB.Exec("UPDATE todo_list SET completion_rate = ? WHERE id = ?", completionRate, todoListID)
+
+	for i, t := range memTodoList {
+		if t.ID == todoListID {
+			t.CompletionRate = completionRate
+			memTodoList[i] = t
+			return nil
+		}
+	}
+
+	return nil
+}
+
 // ============== MOCKING ==============
 
 var memTodoList []models.TodoList
 
 func mockTodoList() {
 	memTodoList = append(memTodoList, models.TodoList{
-		ID:        1,
-		UserID:    2,
-		CreatedAt: time.Unix(1716089965, 0),
-		UpdatedAt: time.Unix(1716089965, 0),
-		DeletedAt: nil,
-		Title:     "Title 1",
+		ID:             1,
+		UserID:         2,
+		Title:          "Title 1",
+		CreatedAt:      time.Unix(1716089965, 0),
+		UpdatedAt:      time.Unix(1716089965, 0),
+		DeletedAt:      nil,
+		CompletionRate: 50,
 	})
 	memTodoList = append(memTodoList, models.TodoList{
-		ID:        2,
-		UserID:    2,
-		CreatedAt: time.Unix(1716090019, 0),
-		UpdatedAt: time.Unix(1716090019, 0),
-		DeletedAt: nil,
-		Title:     "Title 2",
+		ID:             2,
+		UserID:         2,
+		Title:          "Title 2",
+		CreatedAt:      time.Unix(1716090019, 0),
+		UpdatedAt:      time.Unix(1716090019, 0),
+		DeletedAt:      nil,
+		CompletionRate: 100,
 	})
 	memTodoList = append(memTodoList, models.TodoList{
-		ID:        3,
-		UserID:    1,
-		CreatedAt: time.Unix(1716090370, 0),
-		UpdatedAt: time.Unix(1716090370, 0),
-		DeletedAt: nil,
-		Title:     "Title 3",
+		ID:             3,
+		UserID:         1,
+		Title:          "Title 3",
+		CreatedAt:      time.Unix(1716090370, 0),
+		UpdatedAt:      time.Unix(1716090370, 0),
+		DeletedAt:      nil,
+		CompletionRate: 0,
 	})
 }
