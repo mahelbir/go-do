@@ -1,6 +1,6 @@
 ## Go-DO
 
-Go-Do is a TODO application built with Golang. This API allows users to manage their TODO lists and tasks efficiently. The collection is structured into several main sections, each focusing on a different aspect of the application.
+Go-Do is a TODO application built with Golang. This application allows users to manage their TODO lists and tasks efficiently.
 
 ## Authentication
 
